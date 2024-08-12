@@ -1,0 +1,122 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Subscription {
+  bookings  Booking[]
+  createdAt DateTime                   @default(now())
+  id        String                     @id @default(cuid())
+  price     Float?
+  typeField EnumSubscriptionTypeField?
+  updatedAt DateTime                   @updatedAt
+}
+
+model Booking {
+  billboard      Billboard?         @relation(fields: [billboardId], references: [id])
+  billboardId    String?
+  client         Client?            @relation(fields: [clientId], references: [id])
+  clientId       String?
+  createdAt      DateTime           @default(now())
+  id             String             @id @default(cuid())
+  image          Image?             @relation(fields: [imageId], references: [id])
+  imageId        String?
+  payments       Payment[]
+  status         EnumBookingStatus?
+  subscription   Subscription?      @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String?
+  updatedAt      DateTime           @updatedAt
+}
+
+model Billboard {
+  bookings  Booking[]
+  createdAt DateTime             @default(now())
+  id        String               @id @default(cuid())
+  location  String?
+  size      String?
+  status    EnumBillboardStatus?
+  updatedAt DateTime             @updatedAt
+}
+
+model Client {
+  address     String?
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  email       String?
+  id          String    @id @default(cuid())
+  name        String?
+  phoneNumber String?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Payment {
+  amount    Float?
+  booking   Booking?           @relation(fields: [bookingId], references: [id])
+  bookingId String?
+  createdAt DateTime           @default(now())
+  id        String             @id @default(cuid())
+  status    EnumPaymentStatus?
+  updatedAt DateTime           @updatedAt
+}
+
+model Labour {
+  createdAt   DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String?
+  phoneNumber String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Image {
+  bookings   Booking[]
+  createdAt  DateTime  @default(now())
+  id         String    @id @default(cuid())
+  updatedAt  DateTime  @updatedAt
+  uploadDate DateTime?
+  url        String?
+}
+
+model Team {
+  createdAt DateTime      @default(now())
+  email     String?
+  id        String        @id @default(cuid())
+  name      String?
+  role      EnumTeamRole?
+  updatedAt DateTime      @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumSubscriptionTypeField {
+  Option1
+}
+
+enum EnumBookingStatus {
+  Option1
+}
+
+enum EnumBillboardStatus {
+  Option1
+}
+
+enum EnumPaymentStatus {
+  Option1
+}
+
+enum EnumTeamRole {
+  Option1
+}
